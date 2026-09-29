@@ -1,0 +1,23 @@
+# Render Blueprint — New > Blueprint > pick this repo.
+services:
+  - type: web
+    name: unity-assistant
+    runtime: docker
+    plan: free
+    healthCheckPath: /api/health
+    autoDeploy: true
+    envVars:
+      - key: LLM_PROVIDER
+        value: gemini
+      - key: LLM_API_KEY
+        sync: false          # you'll be asked to paste it in the Render dashboard
+      - key: LLM_MODEL
+        value: gemini-2.5-flash
+      - key: UNITY_PORTAL_BASE
+        sync: false
+      - key: UNITY_API_BASE
+        sync: false
+      - key: UNITY_API_TOKEN
+        sync: false
+      - key: APP_USER_NAME
+        value: Guest
