@@ -7,6 +7,7 @@ async function call(path, options) {
 export const api = {
   meta: () => call('/meta'),
   categories: () => call('/categories'),
+  category: (id) => call(`/categories/${encodeURIComponent(id)}`),
   tickets: () => call('/tickets'),
   chat: (message, lastQuery, history) =>
     call('/chat', {

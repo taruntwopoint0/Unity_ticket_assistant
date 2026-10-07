@@ -15,6 +15,7 @@ from fastapi.staticfiles import StaticFiles  # noqa: E402
 from pydantic import BaseModel  # noqa: E402
 
 import assistant  # noqa: E402
+import knowledge_base as kb  # noqa: E402
 import llm  # noqa: E402
 import unity_client  # noqa: E402
 
@@ -53,6 +54,25 @@ def categories():
     return [{"id": c["id"], "name": c["name"], "description": c["description"],
              "count": len(c["offerings"]), "url": unity_client.category_url(c["id"])}
             for c in unity_client.get_categories()]
+
+
+@app.get("/api/categories/{category_id}")
+def category(category_id: str):
+    """One category with its offerings, each with the user's tickets and related KB articles."""
+    c = next((c for c in unity_client.get_categories() if c["id"] == category_id), None)
+    if not c:
+        raise HTTPException(404, "Category not found")
+    tickets = unity_client.get_my_tickets()
+    offerings = [
+        {**o,
+         "url": unity_client.offering_url(o["id"]),
+         "raise_path": f"{o.get('portal') or 'Unity Service Portal'} › {c['name']} › {o['name']}",
+         "tickets": [t for t in tickets if t.get("service_id") == o["id"]],
+         "articles": [{"id": a["id"], "title": a["title"]} for a in kb.ARTICLES if o["id"] in a["offering_ids"]][:2]}
+        for o in c["offerings"]
+    ]
+    return {"id": c["id"], "name": c["name"], "description": c["description"],
+            "url": unity_client.category_url(c["id"]), "offerings": offerings}
 
 
 @app.get("/api/tickets")

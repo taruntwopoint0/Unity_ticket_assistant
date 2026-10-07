@@ -54,9 +54,10 @@ def get_categories() -> list[dict]:
 
 
 def get_services() -> list[dict]:
-    """Categories -> offerings, flattened with parent context and a portal link."""
+    """Categories -> offerings, flattened with parent context, a portal link and where to raise it."""
     return [
-        {**o, "category_id": c["id"], "category": c["name"], "url": offering_url(o["id"])}
+        {**o, "category_id": c["id"], "category": c["name"], "url": offering_url(o["id"]),
+         "raise_path": f"{o.get('portal') or 'Unity Service Portal'} › {c['name']} › {o['name']}"}
         for c in get_categories()
         for o in c["offerings"]
     ]

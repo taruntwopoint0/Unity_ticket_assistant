@@ -16,14 +16,16 @@ export default function App() {
     api.tickets().then(setTickets).catch(() => {});
   }, []);
 
-  const ask = (text) => {
+  // text = what the assistant receives; display = what the chat shows.
+  const ask = (text, display) => {
     setOpen(true);
-    if (text) setSeed({ text, at: Date.now() });
+    if (text) setSeed({ text, display, at: Date.now() });
   };
+  const raise = (offering) => ask(`service:${offering.id}`, `Raise a ticket: ${offering.name}`);
 
   return (
     <>
-      <Portal meta={meta} categories={categories} tickets={tickets} onAsk={ask} />
+      <Portal meta={meta} categories={categories} tickets={tickets} onAsk={ask} onRaise={raise} />
       <ChatWidget meta={meta} open={open} onOpenChange={setOpen} seed={seed} />
     </>
   );
